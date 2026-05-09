@@ -1,0 +1,4 @@
+[submodule "ui/yoga/yoga"]
+	path = ui/yoga/yoga
+	url = https://github.com/facebook/yoga
+    branch = release-v3.2
