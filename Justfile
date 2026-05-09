@@ -1,0 +1,3 @@
+[default]
+run:
+    odin run .
