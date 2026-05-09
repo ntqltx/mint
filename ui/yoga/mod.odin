@@ -37,4 +37,5 @@ foreign lib {
 	YGNodeStyleSetWidth          :: proc(node: YGNodeRef, width: c.float) ---
 	YGNodeStyleSetHeight         :: proc(node: YGNodeRef, height: c.float) ---
 	YGNodeStyleSetFlexWrap       :: proc(node: YGNodeRef, wrap: YGWrap) ---
+	YGNodeFreeRecursive          :: proc(node: YGNodeRef) ---
 }
