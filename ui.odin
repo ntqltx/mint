@@ -17,7 +17,7 @@ info_panel :: proc() {
 	fwd := linalg.normalize(c.camera.target - c.camera.position)
 
 	ui.begin(ui.Frame{
-		x=10, y=10, w=200, h=80,
+		x=10, y=10, w=175, h=80,
 		bg=ui.COLOR_BG,
 		border=ui.COLOR_BORDER, border_px = 1,
 		corner_radius=6,

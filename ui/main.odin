@@ -35,8 +35,8 @@ NodeKind :: enum {
 
 @(private)
 Node :: struct {
-	kind:        NodeKind,
-	yg:          yoga.YGNodeRef,
+	kind:          NodeKind,
+	yg:            yoga.YGNodeRef,
 	// frame
 	x, y:          f32,
 	bg:            rl.Color,
@@ -44,10 +44,10 @@ Node :: struct {
 	border_px:     f32,
 	corner_radius: f32,
 	// label (also points into _labels for external mut)
-	label_idx:   int,
+	label_idx:     int,
 	// tree structure
-	children:    [64]int,
-	child_count: int,
+	children:      [64]int,
+	child_count:   int,
 }
 
 MAX :: 128

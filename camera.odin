@@ -22,6 +22,7 @@ Camera :: struct {
     // pitch limits to prevent gimbal lock
     min_pitch, max_pitch:       f32,
     current_pitch:              f32,
+    mouse_skip:                 int,
 }
 
 camera_init :: proc() -> Camera {
@@ -36,6 +37,7 @@ camera_init :: proc() -> Camera {
         },
         previous_mouse_position = {0, 0},
         is_mouse_dragging = false,
+
         move_speed = 0.2,
         move_speed_fast = 0.4,
         move_speed_slow = 0.1,
@@ -56,23 +58,21 @@ camera_update :: proc(c: ^Camera) {
     mouse_position := rl.GetMousePosition()
     left_shift_down := rl.IsKeyDown(.LEFT_SHIFT)
 
-    middle_mouse_down := rl.IsMouseButtonDown(.MIDDLE)
-    right_mouse_down := rl.IsMouseButtonDown(.RIGHT)
-    is_dragging := middle_mouse_down || right_mouse_down
-
+    is_dragging := rl.IsMouseButtonDown(.RIGHT)
+    c.is_mouse_dragging = is_dragging
+    
     if rl.IsKeyPressed(.F) && left_shift_down {
         c.free_fly = !c.free_fly
         if c.free_fly do rl.DisableCursor()
         else do rl.EnableCursor()
     }
-
+    
     if !c.free_fly {
-        if is_dragging && !c.is_mouse_dragging do rl.DisableCursor()
-        else if !is_dragging && c.is_mouse_dragging do rl.EnableCursor()
-    }
-    c.is_mouse_dragging = is_dragging
+        mouse_delta := -rl.Vector2{
+            mouse_position.x - c.previous_mouse_position.x,
+            mouse_position.y - c.previous_mouse_position.y,
+        }
 
-    if !c.free_fly {
         wheel_move := rl.GetMouseWheelMove()
         direction := rl.Vector3Normalize(c.camera.target - c.camera.position)
 
@@ -81,11 +81,16 @@ camera_update :: proc(c: ^Camera) {
         }
 
         if is_dragging {
-            mouse_delta := -rl.GetMouseDelta()
+            if c.mouse_skip > 0 {
+                c.mouse_skip -= 1
+                c.previous_mouse_position = mouse_position
+                return
+            }
 
             if left_shift_down {
                 right := rl.Vector3Normalize(rl.Vector3CrossProduct(direction, c.camera.up))
                 up := rl.Vector3Normalize(rl.Vector3CrossProduct(right, direction))
+
                 pan := right * (mouse_delta.x * c.pan_speed) +
                        up * (-mouse_delta.y * c.pan_speed)
 
@@ -110,6 +115,32 @@ camera_update :: proc(c: ^Camera) {
                     c.camera.position = new_position
                 }
             }
+
+            MARGIN :: f32(20)
+            sw := f32(rl.GetScreenWidth())
+            sh := f32(rl.GetScreenHeight())
+
+            new_pos := mouse_position
+            warped := false
+
+            if mouse_position.x < MARGIN do new_pos.x = sw - MARGIN - 1
+            else if mouse_position.x > sw - MARGIN do new_pos.x = MARGIN + 1
+
+            if mouse_position.y < MARGIN do new_pos.y = sh - MARGIN - 1
+            else if mouse_position.y > sh - MARGIN do new_pos.y = MARGIN + 1
+            warped = new_pos != mouse_position
+
+            if warped {
+                rl.SetMousePosition(i32(new_pos.x), i32(new_pos.y))
+                c.previous_mouse_position = new_pos
+                c.mouse_skip = 3
+            } 
+            else {
+                c.previous_mouse_position = mouse_position
+            }
+        } 
+        else {
+            c.previous_mouse_position = mouse_position
         }
     } 
     else {
@@ -124,8 +155,8 @@ camera_update :: proc(c: ^Camera) {
         if rl.IsKeyDown(.S) do movement.x -= fly_speed
         if rl.IsKeyDown(.D) do movement.y += fly_speed
         if rl.IsKeyDown(.A) do movement.y -= fly_speed
-        if rl.IsKeyDown(.E) do movement.z -= fly_speed
-        if rl.IsKeyDown(.Q) do movement.z += fly_speed
+        if rl.IsKeyDown(.E) do movement.z += fly_speed
+        if rl.IsKeyDown(.Q) do movement.z -= fly_speed
 
         rl.UpdateCameraPro(&c.camera, movement, {delta.x * 0.05, delta.y * 0.05, 0}, 0)
     }
