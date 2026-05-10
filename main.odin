@@ -2,6 +2,7 @@ package voxel
 
 import "ui"
 import "scene"
+
 import rl "vendor:raylib"
 
 main :: proc() {

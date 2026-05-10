@@ -1,1 +1,5 @@
 /.vscode
+
+# ignore executables
+mint
+*.exe

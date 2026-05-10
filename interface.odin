@@ -1,9 +1,9 @@
 package voxel
 
-import "core:math/linalg"
-
 import "ui"
 import "scene"
+
+import "core:math/linalg"
 import rl "vendor:raylib"
 
 @(private="file") c: ^scene.Camera

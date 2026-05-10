@@ -1,7 +1,6 @@
 package scene
 
 import "core:math"
-
 import rl "vendor:raylib"
 
 Camera :: struct {

@@ -72,7 +72,7 @@ world_update :: proc(w: ^World, cam: rl.Camera) {
     w.raycast = world_raycast(w, ray)
 
     if !w.raycast.hit do return
-    p, n := w.raycast.pos, w.raycast.normal
+    p, _ := w.raycast.pos, w.raycast.normal
 
     // TODO: make place/erase modes
     if rl.IsMouseButtonPressed(.LEFT) {

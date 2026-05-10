@@ -1,9 +1,9 @@
 package ui
 
+import "yoga"
+
 import "core:fmt"
 import "core:strings"
-
-import "./yoga"
 import rl "vendor:raylib"
 
 Frame :: struct {
