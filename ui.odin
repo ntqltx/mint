@@ -13,11 +13,11 @@ ui_draw :: proc(cam: ^Camera) {
 }
 
 info_panel :: proc() {
-	pos := c.cam.position
-	fwd := linalg.normalize(c.cam.target - c.cam.position)
+	pos := c.camera.position
+	fwd := linalg.normalize(c.camera.target - c.camera.position)
 
 	ui.begin(ui.Frame{
-		x=10, y=20, w=200, h=100,
+		x=10, y=10, w=200, h=80,
 		bg=ui.COLOR_BG,
 		border=ui.COLOR_BORDER, border_px = 1,
 		padding=10, gap=6, 
@@ -29,8 +29,5 @@ info_panel :: proc() {
 		ui.labelf("fps %d", rl.GetFPS())
 		ui.labelf("pos %.1f  %.1f  %.1f", pos.x, pos.y, pos.z)
 		ui.labelf("look %.2f  %.2f  %.2f", fwd.x, fwd.y, fwd.z)
-		
-		mouse := ui.label(c.mouse_locked ? "mouse locked [Tab]" : "mouse free [Tab]")
-		mouse.size, mouse.color = 14, ui.COLOR_DIM
 	ui.end()
 }

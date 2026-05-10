@@ -12,15 +12,15 @@ main :: proc() {
 	)
 
 	cam := camera_init()
-	rl.DisableCursor()
+	world := world_init()
 
 	for !rl.WindowShouldClose() {
 		camera_update(&cam)
 
 		rl.BeginDrawing()
-		rl.ClearBackground(rl.Color{40, 40, 40, 255})
+		rl.ClearBackground({40, 40, 40, 255})
 
-		rl.BeginMode3D(cam.cam)
+		rl.BeginMode3D(cam.camera)
 		rl.DrawGrid(32, 1)
 		rl.EndMode3D()
 
