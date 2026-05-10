@@ -3,26 +3,28 @@ package ui
 import "core:fmt"
 import "core:strings"
 
-import yoga "./yoga"
+import "./yoga"
 import rl "vendor:raylib"
 
 Frame :: struct {
-	x, y:      	f32,
-	w, h:      	f32,
-	padding:   	f32,
-	gap:       	f32,
-	bg:       	rl.Color,
-	border:    	rl.Color,
-	border_px: 	f32,
-	row:       	bool,
-	text_size:  f32,
-	text_color: rl.Color,
+	x, y:          f32,
+	w, h:          f32,
+	padding:       f32,
+	gap:           f32,
+	bg:            rl.Color,
+	border:        rl.Color,
+	border_px:     f32,
+	corner_radius: f32,
+	row:           bool,
+	text_size:     f32,
+	text_color:    rl.Color,
 }
 
 Label :: struct {
-	text:  cstring,
-	size:  f32,
-	color: rl.Color,
+	text:  	 cstring,
+	size:  	 f32,
+	color: 	 rl.Color,
+	padding: f32,
 }
 
 @(private)
@@ -36,10 +38,11 @@ Node :: struct {
 	kind:        NodeKind,
 	yg:          yoga.YGNodeRef,
 	// frame
-	x, y:        f32,
-	bg:          rl.Color,
-	border:      rl.Color,
-	border_px:   f32,
+	x, y:          f32,
+	bg:            rl.Color,
+	border:        rl.Color,
+	border_px:     f32,
+	corner_radius: f32,
 	// label (also points into _labels for external mut)
 	label_idx:   int,
 	// tree structure
@@ -48,6 +51,8 @@ Node :: struct {
 }
 
 MAX :: 128
+GLOBAL_FONT :: "./ui/fonts/cashmarket.ttf"
+@(private) _font: rl.Font
 
 @(private) nodes: [MAX]Node
 @(private) node_count: int
@@ -60,6 +65,14 @@ MAX :: 128
 // temporary idea, later will implement something better, idk
 @(private) _def_text_size: f32
 @(private) _def_text_color: rl.Color
+
+init :: proc() {
+	_font = rl.LoadFont(GLOBAL_FONT)
+}
+
+unload :: proc() {
+	rl.UnloadFont(_font)
+}
 
 begin :: proc(f: Frame) {
 	if stack_depth == 0 {
@@ -81,9 +94,9 @@ begin :: proc(f: Frame) {
 		kind = .Frame, yg = yg,
 		x = f.x, y = f.y,
 		bg = f.bg,
-
 		border = f.border,
 		border_px = f.border_px,
+		corner_radius = f.corner_radius,
 	}
 	node_count += 1
 
@@ -171,31 +184,52 @@ paint :: proc(ni: int, ox, oy: f32) {
 	lw := f32(yoga.YGNodeLayoutGetWidth(n.yg))
 	lh := f32(yoga.YGNodeLayoutGetHeight(n.yg))
 
+	rec := rl.Rectangle{lx, ly, lw, lh}
+	roundness := clamp(n.corner_radius * 2 / min(lw, lh), 0, 1) if n.corner_radius > 0 else f32(0)
+
 	switch n.kind {
 	case .Frame:
 		if n.bg.a > 0 {
-			rl.DrawRectangle(
-				i32(lx), i32(ly), // position
-				i32(lw), i32(lh), // size
-				n.bg
-			)
+			if roundness > 0 {
+				rl.DrawRectangleRounded(
+					rec, roundness, 
+					8, n.bg
+				)
+			} 
+			else {
+				rl.DrawRectangle(
+					i32(lx), i32(ly), // position
+					i32(lw), i32(lh), // size
+					n.bg
+				)
+			}
 		}
 		if n.border_px > 0 && n.border.a > 0 {
-			rl.DrawRectangleLinesEx(
-				{lx, ly, lw, lh}, 
-				n.border_px, n.border
-			)
+			if roundness > 0 {
+				rl.DrawRectangleRoundedLinesEx(
+					rec, roundness, 8, 
+					n.border_px, n.border
+				)
+			} 
+			else {
+				rl.DrawRectangleLinesEx(
+					rec, n.border_px, 
+					n.border
+				)
+			}
 		}
 		for i in 0 ..< n.child_count {
 			paint(n.children[i], lx, ly)
 		}
-		
+
 	case .Label:
 		l := labels[n.label_idx]
-		rl.DrawText(
-			l.text,
-			i32(lx), i32(ly), 
-			i32(l.size), l.color
+		rl.DrawTextEx(
+			_font, l.text,
+			rl.Vector2{lx, ly},
+			l.size, 
+			l.padding, 
+			l.color
 		)
 	}
 }

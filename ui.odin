@@ -2,7 +2,7 @@ package voxel
 
 import "core:math/linalg"
 
-import ui "./ui"
+import "./ui"
 import rl "vendor:raylib"
 
 @(private="file") c: ^Camera
@@ -20,6 +20,7 @@ info_panel :: proc() {
 		x=10, y=10, w=200, h=80,
 		bg=ui.COLOR_BG,
 		border=ui.COLOR_BORDER, border_px = 1,
+		corner_radius=6,
 		padding=10, gap=6, 
 
 		// temporary idea

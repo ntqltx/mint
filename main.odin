@@ -1,18 +1,22 @@
 package voxel
 
+import "ui"
 import rl "vendor:raylib"
 
 main :: proc() {
 	rl.SetConfigFlags({.WINDOW_RESIZABLE, .MSAA_4X_HINT})
 	rl.InitWindow(1280, 720, "voxel")
 	defer rl.CloseWindow()
-
+	
 	rl.SetTargetFPS(
 		rl.GetMonitorRefreshRate(rl.GetCurrentMonitor())
 	)
-
+	
 	cam := camera_init()
 	world := world_init()
+	
+	ui.init()
+	defer ui.unload()
 
 	for !rl.WindowShouldClose() {
 		camera_update(&cam)
