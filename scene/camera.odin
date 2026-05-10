@@ -1,4 +1,4 @@
-package voxel
+package scene
 
 import "core:math"
 

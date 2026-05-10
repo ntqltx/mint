@@ -2,12 +2,13 @@ package voxel
 
 import "core:math/linalg"
 
-import "./ui"
+import "ui"
+import "scene"
 import rl "vendor:raylib"
 
-@(private="file") c: ^Camera
+@(private="file") c: ^scene.Camera
 
-ui_draw :: proc(cam: ^Camera) {
+ui_draw :: proc(cam: ^scene.Camera) {
 	c = cam
 	info_panel()
 }

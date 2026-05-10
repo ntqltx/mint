@@ -1,6 +1,7 @@
 package voxel
 
 import "ui"
+import "scene"
 import rl "vendor:raylib"
 
 main :: proc() {
@@ -12,19 +13,21 @@ main :: proc() {
 		rl.GetMonitorRefreshRate(rl.GetCurrentMonitor())
 	)
 	
-	cam := camera_init()
-	world := world_init()
+	cam := scene.camera_init()
+	world := scene.world_init()
 	
 	ui.init()
 	defer ui.unload()
 
 	for !rl.WindowShouldClose() {
-		camera_update(&cam)
+		scene.camera_update(&cam)
+		scene.world_update(&world, cam.camera)
 
 		rl.BeginDrawing()
 		rl.ClearBackground({40, 40, 40, 255})
 
 		rl.BeginMode3D(cam.camera)
+		scene.world_draw(&world)
 		rl.DrawGrid(32, 1)
 		rl.EndMode3D()
 

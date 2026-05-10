@@ -100,7 +100,7 @@ begin :: proc(f: Frame) {
 	}
 	node_count += 1
 
-	if f.text_size > 0 do _def_text_size  = f.text_size
+	if f.text_size > 0 do _def_text_size = f.text_size
 	if f.text_color.a > 0 do _def_text_color = f.text_color
 
 	if stack_depth > 0 {
