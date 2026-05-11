@@ -19,15 +19,18 @@ draw_cube_outline :: proc(center: rl.Vector3, thickness: f32, color: rl.Color) {
         {{-h,  h, 0}, {t, t, 1}}, {{-h, -h, 0}, {t, t, 1}},
     }
 
-    for e in edges do rl.DrawCube(
+    for e in edges do rl.DrawCubeV(
 		center + e.offset, 
-		e.dims.x, e.dims.y, e.dims.z, 
+		{e.dims.x, e.dims.y, e.dims.z}, 
 		color
 	)
 
 	// outline cube corners
     signs := []f32{-h, h}
     for sx in signs do for sy in signs do for sz in signs {
-        rl.DrawCube(center + {sx, sy, sz}, t, t, t, color)
+        rl.DrawCubeV(
+            center + {sx, sy, sz},
+            {t, t, t}, color
+        )
     }
 }

@@ -6,7 +6,7 @@ alias br := build-release
 [group("debug")]
 [default]
 run: build-debug
-    ./voxel
+    ./mint
 
 # build debug binary with vet flag
 [group("debug")]
